@@ -1,0 +1,75 @@
+'use client';
+import { useEffect, useRef, useState } from 'react';
+import { apiManager } from '../apiManager';
+import io from 'socket.io-client';
+import { useRouter } from 'next/navigation';
+
+interface Product {
+	id: number;
+	name: string;
+	description: string;
+	price: number;
+	stock: number;
+	createdAt: string;
+	updatedAt: string;
+}
+
+interface StockData {
+	id: number;
+	stock: number;
+}
+
+export default function Page() {
+	const [data, setData] = useState<Product[] | []>([]);
+	const router = useRouter();
+
+	const fetchData = async () => {
+		const response = await apiManager.get('products');
+
+		if (response.status === 200) {
+			setData(response.data);
+		}
+	};
+
+	useEffect(() => {
+		fetchData();
+	}, []);
+
+	return (
+		<div style={{ marginLeft: '20px', marginTop: '10px' }}>
+			<h1 style={{ marginBottom: '20px' }}>Products</h1>
+
+			{data?.length > 0 ? (
+				data.map((e) => {
+					return (
+						<div
+							key={e.id}
+							style={{
+								marginBottom: '20px',
+								gap: '5px',
+								display: 'flex',
+								flexDirection: 'row',
+							}}
+						>
+							<div>
+								<div>Name: {e.name}</div>
+								<div>Desc: {e.description}</div>
+								<div>Price: {e.price}</div>
+								<div>Stock: {e.stock}</div>
+								<div>Created : {e.createdAt}</div>
+							</div>
+							<button
+								style={{ height: '30px', width: '80px' }}
+								onClick={(event) => router.push(`/products/${e.id}`)}
+							>
+								View
+							</button>
+						</div>
+					);
+				})
+			) : (
+				<div>No data</div>
+			)}
+		</div>
+	);
+}
