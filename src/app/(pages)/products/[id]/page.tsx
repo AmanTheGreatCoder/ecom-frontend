@@ -19,11 +19,9 @@ interface Product {
 export default function Page() {
 	const [data, setData] = useState<Product | null>(null);
 	const [code, setCode] = useState<number | null>(null);
+	const [user, setUser] = useState<any>();
 	const searchParams = useSearchParams();
 	const params = useParams();
-	const user =
-		localStorage.getItem('user') &&
-		JSON.parse(localStorage.getItem('user') as string);
 
 	const fetchData = async () => {
 		const response = await apiManager.get(`/products/${params.id}`);
@@ -34,9 +32,10 @@ export default function Page() {
 	};
 
 	const buy = async () => {
+		console.log('userrr in buyyy', user);
 		const response = await apiManager.post(`/products/buy`, {
 			productId: data?.id,
-			affiliateId: user?.affiliate?.id,
+			affiliateId: code,
 		});
 
 		if (response.status === 201) {
@@ -49,7 +48,13 @@ export default function Page() {
 	};
 
 	useEffect(() => {
+		const user =
+			localStorage.getItem('user') &&
+			JSON.parse(localStorage.getItem('user') as string);
+
+		setUser(user);
 		fetchData();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
