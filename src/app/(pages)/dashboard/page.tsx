@@ -1,17 +1,26 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { apiManager } from '../apiManager';
+import { apiManager } from '../../apiManager';
 import { DashboardData } from '@/utils/types';
+import { useRouter } from 'next/navigation';
 
 export default function Page() {
 	const [data, setData] = useState<DashboardData | null>(null);
+	const user =
+		localStorage.getItem('user') &&
+		JSON.parse(localStorage.getItem('user') as string);
+	const router = useRouter();
 
 	const fetchData = async () => {
-		const response = await apiManager.get('dashboard');
+		if (user.role === 'affiliate') {
+			const response = await apiManager.get(`dashboard/${user?.affiliate?.id}`);
 
-		if (response.data) {
-			setData(response.data);
+			if (response.data) {
+				setData(response.data);
+			}
+		} else {
+			router.push('/products');
 		}
 	};
 

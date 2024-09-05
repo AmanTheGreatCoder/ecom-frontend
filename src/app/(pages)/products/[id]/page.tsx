@@ -21,9 +21,12 @@ export default function Page() {
 	const [code, setCode] = useState<number | null>(null);
 	const searchParams = useSearchParams();
 	const params = useParams();
+	const user =
+		localStorage.getItem('user') &&
+		JSON.parse(localStorage.getItem('user') as string);
 
 	const fetchData = async () => {
-		const response = await apiManager.get(`products/${params.id}`);
+		const response = await apiManager.get(`/products/${params.id}`);
 
 		if (response.status === 200) {
 			setData(response.data);
@@ -31,15 +34,18 @@ export default function Page() {
 	};
 
 	const buy = async () => {
-		const response = await apiManager.post(`products/buy/${data?.id}`);
+		const response = await apiManager.post(`/products/buy`, {
+			productId: data?.id,
+			affiliateId: user?.affiliate?.id,
+		});
 
 		if (response.status === 201) {
 			toast.success('Product purchased successfully');
 		}
 	};
 
-	const sendClick = async (code: number) => {
-		await apiManager.post(`affiliate/click/${code}`);
+	const sendClick = async (affiliateId: number) => {
+		await apiManager.post(`/affiliate/click/${affiliateId}`);
 	};
 
 	useEffect(() => {
@@ -74,7 +80,6 @@ export default function Page() {
 					<div>Desc: {data.description}</div>
 					<div>Price: {data.price}</div>
 					<div>Stock: {data.stock}</div>
-					<div>Created : {data.createdAt}</div>
 				</div>
 			</div>
 			<button onClick={(e) => buy()}>Buy</button>

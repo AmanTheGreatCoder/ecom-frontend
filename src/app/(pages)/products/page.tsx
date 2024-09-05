@@ -1,16 +1,23 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { apiManager } from '../apiManager';
+import { apiManager } from '../../apiManager';
 import io from 'socket.io-client';
 import { useRouter } from 'next/navigation';
 import { Product } from '@/utils/types';
 
 export default function Page() {
 	const [data, setData] = useState<Product[] | []>([]);
+	const user =
+		localStorage.getItem('user') &&
+		JSON.parse(localStorage.getItem('user') as string);
 	const router = useRouter();
 
 	const fetchData = async () => {
-		const response = await apiManager.get('products');
+		const response = await apiManager.get(
+			user.role === 'affiliate'
+				? `/products?affiliateId=${user?.affiliate.id}`
+				: '/products'
+		);
 
 		if (response.status === 200) {
 			setData(response.data);
@@ -18,7 +25,10 @@ export default function Page() {
 	};
 
 	const createAffiliateLink = async (id: number) => {
-		const response = await apiManager.post(`/affiliate/link/${id}`);
+		const response = await apiManager.post(`/affiliate/link`, {
+			productId: id,
+			affiliateId: user?.affiliate?.id,
+		});
 
 		if (response.data) {
 			fetchData();
@@ -58,16 +68,17 @@ export default function Page() {
 							>
 								View
 							</button>
-							{e?.affiliateLink?.length > 0 && e?.affiliateLink[0].link ? (
-								<div>{e.affiliateLink[0].link}</div>
-							) : (
-								<button
-									style={{ height: '30px', width: '80px' }}
-									onClick={(event) => createAffiliateLink(e.id)}
-								>
-									Create Affiliate Link
-								</button>
-							)}
+							{user?.role !== 'user' &&
+								(e?.affiliateLink?.length > 0 && e?.affiliateLink[0].link ? (
+									<div>{e.affiliateLink[0].link}</div>
+								) : (
+									<button
+										style={{ height: '30px', width: '80px' }}
+										onClick={(event) => createAffiliateLink(e.id)}
+									>
+										Create Affiliate Link
+									</button>
+								))}
 						</div>
 					);
 				})
