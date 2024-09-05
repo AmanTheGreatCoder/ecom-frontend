@@ -2,20 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { apiManager } from '../apiManager';
-
-interface DashboardData {
-	conversionRate: string; // as it is returned as a string after using `toFixed(2)`
-	commissionRate: number; // as `affiliate.commission` is a float number
-	totalEarnings: string; // as it is returned as a string after using `toFixed(2)`
-	totalVisits: number; // as `affiliate.visits` is an integer
-	visitsToday: number; // as `visitsToday` is calculated and returned as an integer
-}
+import { DashboardData } from '@/utils/types';
 
 export default function Page() {
 	const [data, setData] = useState<DashboardData | null>(null);
 
 	const fetchData = async () => {
-		const response = await apiManager.get('dashboard?id=2');
+		const response = await apiManager.get('dashboard');
 
 		if (response.data) {
 			setData(response.data);
@@ -33,10 +26,62 @@ export default function Page() {
 	return (
 		<div>
 			<div>Total Earnings: ${data?.totalEarnings}</div>
+			<div>Total Sales: ${data?.totalSales}</div>
 			<div>Commission Rate: {data?.commissionRate}%</div>
 			<div>Conversion Rate: {data?.conversionRate}%</div>
 			<div>Visits: ${data?.totalVisits} </div>
 			<div>Visits Today: ${data?.visitsToday} </div>
+
+			<table
+				style={{ marginTop: '50px', width: '100%', borderCollapse: 'collapse' }}
+			>
+				<thead>
+					<tr>
+						<th style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>
+							Product Name
+						</th>
+						<th style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>
+							Comission
+						</th>
+						<th style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>
+							Visits
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					{data.affiliate_links.map((e) => (
+						<tr key={e.id}>
+							<td
+								style={{
+									padding: '10px',
+									textAlign: 'center',
+									borderBottom: '1px solid #ccc',
+								}}
+							>
+								{e.product.name}
+							</td>
+							<td
+								style={{
+									padding: '10px',
+									textAlign: 'center',
+									borderBottom: '1px solid #ccc',
+								}}
+							>
+								${e.commissionEarned}
+							</td>
+							<td
+								style={{
+									padding: '10px',
+									textAlign: 'center',
+									borderBottom: '1px solid #ccc',
+								}}
+							>
+								{e.clicks}
+							</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
 		</div>
 	);
 }

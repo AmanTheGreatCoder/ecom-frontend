@@ -3,21 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { apiManager } from '../apiManager';
 import io from 'socket.io-client';
 import { useRouter } from 'next/navigation';
-
-interface Product {
-	id: number;
-	name: string;
-	description: string;
-	price: number;
-	stock: number;
-	createdAt: string;
-	updatedAt: string;
-}
-
-interface StockData {
-	id: number;
-	stock: number;
-}
+import { Product } from '@/utils/types';
 
 export default function Page() {
 	const [data, setData] = useState<Product[] | []>([]);
@@ -28,6 +14,14 @@ export default function Page() {
 
 		if (response.status === 200) {
 			setData(response.data);
+		}
+	};
+
+	const createAffiliateLink = async (id: number) => {
+		const response = await apiManager.post(`/affiliate/link/${id}`);
+
+		if (response.data) {
+			fetchData();
 		}
 	};
 
@@ -64,6 +58,16 @@ export default function Page() {
 							>
 								View
 							</button>
+							{e?.affiliateLink?.length > 0 && e?.affiliateLink[0].link ? (
+								<div>{e.affiliateLink[0].link}</div>
+							) : (
+								<button
+									style={{ height: '30px', width: '80px' }}
+									onClick={(event) => createAffiliateLink(e.id)}
+								>
+									Create Affiliate Link
+								</button>
+							)}
 						</div>
 					);
 				})

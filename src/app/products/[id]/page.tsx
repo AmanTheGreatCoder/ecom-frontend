@@ -33,8 +33,8 @@ export default function Page() {
 	const buy = async () => {
 		const response = await apiManager.post(`products/buy/${data?.id}`);
 
-		if (response.status === 200) {
-			toast.success('Product bought successfully');
+		if (response.status === 201) {
+			toast.success('Product purchased successfully');
 		}
 	};
 
