@@ -27,7 +27,7 @@ class ApiManager {
 		});
 	}
 
-	async get(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse> {
+	async get(url: string, config?: AxiosRequestConfig) {
 		try {
 			console.log('urll', url);
 			const response = await this.api.get(url, config);
@@ -38,11 +38,7 @@ class ApiManager {
 	}
 
 	// Method to handle POST requests
-	async post(
-		url: string,
-		data?: any,
-		config?: AxiosRequestConfig
-	): Promise<AxiosResponse> {
+	async post(url: string, data?: any, config?: AxiosRequestConfig) {
 		try {
 			console.log('urrrl', url, 'dataaa', data);
 			const response = await this.api.post(url, data, config);
@@ -52,11 +48,7 @@ class ApiManager {
 		}
 	}
 
-	async put(
-		url: string,
-		data: any,
-		config?: AxiosRequestConfig
-	): Promise<AxiosResponse> {
+	async put(url: string, data: any, config?: AxiosRequestConfig) {
 		try {
 			const response = await this.api.put(url, data, config);
 			return handleApiResponse(response);
@@ -65,11 +57,7 @@ class ApiManager {
 		}
 	}
 
-	async patch(
-		url: string,
-		data: any,
-		config?: AxiosRequestConfig
-	): Promise<AxiosResponse> {
+	async patch(url: string, data: any, config?: AxiosRequestConfig) {
 		try {
 			const response = await this.api.patch(url, data, config);
 			return handleApiResponse(response);
@@ -78,10 +66,7 @@ class ApiManager {
 		}
 	}
 
-	async delete(
-		url: string,
-		config?: AxiosRequestConfig
-	): Promise<AxiosResponse> {
+	async delete(url: string, config?: AxiosRequestConfig) {
 		try {
 			const response = await this.api.delete(url, config);
 			return handleApiResponse(response);
@@ -90,11 +75,7 @@ class ApiManager {
 		}
 	}
 
-	async postForm(
-		url: string,
-		formData: FormData,
-		config?: AxiosRequestConfig
-	): Promise<AxiosResponse> {
+	async postForm(url: string, formData: FormData, config?: AxiosRequestConfig) {
 		try {
 			const response = await this.api.post(url, formData, {
 				headers: {
@@ -109,11 +90,7 @@ class ApiManager {
 	}
 
 	// Method to handle PUT form requests
-	async putForm(
-		url: string,
-		formData: FormData,
-		config?: AxiosRequestConfig
-	): Promise<AxiosResponse> {
+	async putForm(url: string, formData: FormData, config?: AxiosRequestConfig) {
 		try {
 			const response = await this.api.put(url, formData, {
 				headers: {

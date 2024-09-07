@@ -2,7 +2,6 @@
 
 import { apiManager } from '@/app/apiManager';
 import { useParams, useSearchParams } from 'next/navigation';
-import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -19,7 +18,6 @@ interface Product {
 export default function Page() {
 	const [data, setData] = useState<Product | null>(null);
 	const [code, setCode] = useState<number | null>(null);
-	const [user, setUser] = useState<any>();
 	const searchParams = useSearchParams();
 	const params = useParams();
 
@@ -32,10 +30,10 @@ export default function Page() {
 	};
 
 	const buy = async () => {
-		console.log('userrr in buyyy', user);
+		console.log('buy function called');
 		const response = await apiManager.post(`/products/buy`, {
 			productId: data?.id,
-			affiliateId: code,
+			...(code && { affiliateId: code }),
 		});
 
 		if (response.status === 201) {
@@ -44,27 +42,25 @@ export default function Page() {
 	};
 
 	const sendClick = async (affiliateId: number) => {
-		await apiManager.post(`/affiliate/click/${affiliateId}`);
+		await apiManager.post(`/affiliate/click`, {
+			affiliateId,
+			productId: data?.id,
+		});
 	};
 
 	useEffect(() => {
-		const user =
-			localStorage.getItem('user') &&
-			JSON.parse(localStorage.getItem('user') as string);
-
-		setUser(user);
 		fetchData();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
-		if (searchParams?.get('code')) {
+		if (data?.id && searchParams?.get('code')) {
 			const code = parseInt(searchParams.get('code') as string);
 			setCode(code);
 
 			sendClick(code);
 		}
-	}, [searchParams]);
+	}, [data, searchParams]);
 
 	if (!data?.id) {
 		return <div>Product not found</div>;

@@ -7,14 +7,16 @@ import { useRouter } from 'next/navigation';
 
 export default function Page() {
 	const [data, setData] = useState<DashboardData | null>(null);
-	const user =
+	const userData =
 		localStorage.getItem('user') &&
 		JSON.parse(localStorage.getItem('user') as string);
 	const router = useRouter();
 
 	const fetchData = async () => {
-		if (user.role === 'affiliate') {
-			const response = await apiManager.get(`dashboard/${user?.affiliate?.id}`);
+		if (userData?.role === 'affiliate') {
+			const response = await apiManager.get(
+				`dashboard/${userData?.affiliate?.id}`
+			);
 
 			if (response.data) {
 				setData(response.data);

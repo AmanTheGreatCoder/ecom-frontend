@@ -21,11 +21,11 @@ export default function LoginPage() {
 
 			if (response.data) {
 				localStorage.setItem('token', response.data.access_token);
-				localStorage.setItem('user', JSON.stringify(response.data));
+				localStorage.setItem('user', JSON.stringify(response.data.user));
 
-				if (response.data.role === 'user') {
+				if (response.data.user.role === 'user') {
 					router.push('/products');
-				} else if (response.data.role === 'affiliate') {
+				} else if (response.data.user.role === 'affiliate') {
 					router.push('/dashboard');
 				}
 			} else {

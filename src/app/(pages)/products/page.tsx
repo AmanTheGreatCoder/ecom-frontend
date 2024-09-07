@@ -1,21 +1,20 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
-import { apiManager } from '../../apiManager';
-import io from 'socket.io-client';
-import { useRouter } from 'next/navigation';
 import { Product } from '@/utils/types';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { apiManager } from '../../apiManager';
 
 export default function Page() {
 	const [data, setData] = useState<Product[] | []>([]);
-	const user =
+	const userData =
 		localStorage.getItem('user') &&
 		JSON.parse(localStorage.getItem('user') as string);
 	const router = useRouter();
 
 	const fetchData = async () => {
 		const response = await apiManager.get(
-			user.role === 'affiliate'
-				? `/products?affiliateId=${user?.affiliate.id}`
+			userData?.role === 'affiliate'
+				? `/products?affiliateId=${userData?.affiliate.id}`
 				: '/products'
 		);
 
@@ -27,7 +26,7 @@ export default function Page() {
 	const createAffiliateLink = async (id: number) => {
 		const response = await apiManager.post(`/affiliate/link`, {
 			productId: id,
-			affiliateId: user?.affiliate?.id,
+			affiliateId: userData?.affiliate?.id,
 		});
 
 		if (response.data) {
@@ -68,7 +67,7 @@ export default function Page() {
 							>
 								View
 							</button>
-							{user?.role !== 'user' &&
+							{userData?.role !== 'user' &&
 								(e?.affiliateLink?.length > 0 && e?.affiliateLink[0].link ? (
 									<div>{e.affiliateLink[0].link}</div>
 								) : (
